@@ -8,6 +8,7 @@ Configurations and todos to make your Arch Linux the best Arch Linux
   - [Microcode updates](#microcode-updates)
   - [Compress initramfs with lz4](#compress-initramfs-with-lz4)
   - [Change IO Scheduler](#change-io-scheduler)
+  - [Change CPU governor](#change-cpu-governor)
 - [Networking](#networking)
   - [DNSCrypt](#dnscrypt)
 - [Graphics](#graphics)
@@ -81,6 +82,18 @@ Edit `/etc/mkinitcpio.conf`:
 Run `sudo mkinitcpio -p linux` to apply the mkinitcpio.conf changes.
 
 ## Change IO Scheduler
+
+## Change CPU governor
+
+[Arch Wiki reference](https://wiki.archlinux.org/index.php/CPU_frequency_scaling)
+
+*NB: the default governor is powersave and you may want to leave it as it is.*
+
+Create `/etc/udev/rules.d/50-scaling-governor.rules` as follows:
+
+```
+SUBSYSTEM=="module", ACTION=="add", KERNEL=="acpi_cpufreq", RUN+=" /bin/sh -c ' echo performance > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor ' "
+```
 
 # Networking
 
