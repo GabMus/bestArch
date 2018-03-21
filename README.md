@@ -9,6 +9,8 @@ Configurations and todos to make your Arch Linux the best Arch Linux
   - [Compress initramfs with lz4](#compress-initramfs-with-lz4)
   - [Change IO Scheduler](#change-io-scheduler)
   - [Change CPU governor](#change-cpu-governor)
+- [Package Management](#package-management)
+  - [Switch to better mirrors](#switch-to-better-mirrors)
 - [Networking](#networking)
   - [DNSCrypt](#dnscrypt)
 - [Graphics](#graphics)
@@ -93,6 +95,17 @@ Create `/etc/udev/rules.d/50-scaling-governor.rules` as follows:
 
 ```
 SUBSYSTEM=="module", ACTION=="add", KERNEL=="acpi_cpufreq", RUN+=" /bin/sh -c ' echo performance > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor ' "
+```
+
+# Package Management
+
+## Switch to better mirrors
+
+[Arch Wiki reference](https://wiki.archlinux.org/index.php/Reflector)
+
+```bash
+sudo pacman -S reflector
+sudo reflector --latest 200 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 ```
 
 # Networking
