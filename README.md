@@ -5,6 +5,7 @@ Configurations and todos to make your Arch Linux the best Arch Linux
 
 - [System](#system)
   - [Use systemd-boot](#use-systemd-boot)
+  - [Microcode updates](#microcode-updates)
   - [Compress initramfs with lz4](#compress-initramfs-with-lz4)
   - [Change IO Scheduler](#change-io-scheduler)
 - [Networking](#networking)
@@ -15,6 +16,57 @@ Configurations and todos to make your Arch Linux the best Arch Linux
 # System
 
 ## Use systemd-boot
+
+[Arch Wiki reference](https://wiki.archlinux.org/index.php/Systemd-boot#Installation)
+
+Requires you to be able to boot in UEFI mode (not MBR).
+
+You need to have a `/boot` partition formatted in FAT32 (usually I make it 400 MBs, even if it's a little too much).
+
+Assuming you have all your file systems mounted to their proper locations AND that you are already chroot-ed in your installed system.
+
+```bash
+sudo bootctl --path=/boot install
+```
+
+Create `/boot/loader/entries/arch.conf` like follows:
+
+```
+title		Arch Linux
+linux		/vmlinuz-linux
+# uncomment this in case you want to install intel microcode
+# initrd		/intel-ucode.img
+initrd		/initramfs-linux.img
+options		root=UUID=ROOT_PARTITION_UUID rw quiet # nvidia-drm.modeset=1 # uncomment this if/when you want to enable nvidia drm kernel mode setting
+```
+
+Where `ROOT_PARTITION_UUID` can be obtained from the command `lsblk -f` (use the UUID of the partition mounted as `/`).
+
+You may want to edit `/boot/loader/loader.conf` to set a timeout (format: `timeout TIME_IN_SECONDS`) and to add a line that says `default arch-*`.
+
+Install [`systemd-boot-pacman-hook`](https://aur.archlinux.org/packages/systemd-boot-pacman-hook/)<sup>AUR</sup> to automatically update systemd-boot.
+
+## Microcode updates
+
+[Arch wiki reference](https://wiki.archlinux.org/index.php/Microcode#Enabling_Intel_microcode_updates)
+
+### AMD
+
+From Arch Wiki:
+
+> For AMD processors the microcode updates are available in `linux-firmware`, which is installed as part of the `base` system. **No further action is needed.**
+
+### Intel
+
+```bash
+sudo pacman -S intel-ucode
+```
+
+Edit `/boot/loader/entries/arch.conf` so that the first `initrd` line is the following:
+
+```
+initrd        /intel-ucode.img
+```
 
 ## Compress initramfs with lz4
 
@@ -103,3 +155,4 @@ Exec=/usr/bin/mkinitcpio -P
 *NB: Make sure the Target package set in this hook is the one you have installed (`nvidia`, `nvidia-lts` or some other different or legacy driver package name).*
 
 Edit `/etc/gdm/custom.conf` uncommenting the row that says `WaylandEnable=false` (enabling DRM kernel mode setting usually improves performance but enables NVIDIA Wayland support for GNOME, but currently NVIDIA Wayland performance is terrible and makes for an unusable experience. While this option is not mandatory, it's highly recommended).
+
