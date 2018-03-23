@@ -9,12 +9,17 @@ Configurations and todos to make your Arch Linux the best Arch Linux
   - [Compress initramfs with lz4](#compress-initramfs-with-lz4)
   - [Change IO Scheduler](#change-io-scheduler)
   - [Change CPU governor](#change-cpu-governor)
+  - [Create a swap file](#create-a-swap-file)\
+  - [Enable hibernation](#enable-hibernation)
 - [Package Management](#package-management)
   - [Switch to better mirrors](#switch-to-better-mirrors)
 - [Networking](#networking)
   - [DNSCrypt](#dnscrypt)
 - [Graphics](#graphics)
   - [NVIDIA driver DRM kernel mode setting](#nvidia-driver-drm-kernel-mode-setting)
+- [Multimedia](#multimedia)
+  - [Fix bluetooth audio](#fix-bluetooth-audio)
+  - [MPV hardware decoding (NVIDIA VDPAU)](#mpv-hardware-decoding-nvidia-vdpau)
 
 # System
 
@@ -96,6 +101,47 @@ Create `/etc/udev/rules.d/50-scaling-governor.rules` as follows:
 ```
 SUBSYSTEM=="module", ACTION=="add", KERNEL=="acpi_cpufreq", RUN+=" /bin/sh -c ' echo performance > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor ' "
 ```
+
+## Create a swap file
+
+[Arch Wiki reference](https://wiki.archlinux.org/index.php/Swap#Swap_file)
+
+A form of swap is required to enable hibernation.
+
+In this example we will allocate a 8G swap file.
+
+```bash
+sudo dd if=/dev/zero of=/home/swapfile bs=1M count=8192
+sudo chmod 600 /home/swapfile
+sudo mkswap /home/swapfile
+sudo swapon /home/swapfile # this enables the swap file for the current session
+```
+
+Edit `/etc/fstab` adding the following line:
+
+```
+/home/swapfile none swap defaults 0 0
+```
+
+### Removing the swap file if not necessary/wanted anymore
+
+```
+sudo swapoff -a
+```
+
+Edit `/etc/fstab` and remove the swapfile entry, and finally:
+
+```
+sudo rm -f /home/swapfile
+```
+
+### Alternative route
+
+Use systemd-swap for automated and dynamic swapfile allocation and use. Consult [the GitHub project page](https://github.com/Nefelim4ag/systemd-swap) for more info.
+
+## Enable Hibernation
+
+[Arch Wiki reference](https://wiki.archlinux.org/index.php/Power_management/Suspend_and_hibernate#Hibernation_into_swap_file)
 
 # Package Management
 
@@ -181,4 +227,41 @@ Exec=/usr/bin/mkinitcpio -P
 *NB: Make sure the Target package set in this hook is the one you have installed (`nvidia`, `nvidia-lts` or some other different or legacy driver package name).*
 
 Edit `/etc/gdm/custom.conf` uncommenting the row that says `WaylandEnable=false` (enabling DRM kernel mode setting usually improves performance but enables NVIDIA Wayland support for GNOME, but currently NVIDIA Wayland performance is terrible and makes for an unusable experience. While this option is not mandatory, it's highly recommended).
+
+# Multimedia
+
+## Fix bluetooth audio
+
+[Arch Wiki reference](https://wiki.archlinux.org/index.php/Bluetooth_headset)
+
+Prevent GDM from spawning pulseaudio: edit `/var/lib/gdm/.config/pulse/client.conf` like so:
+
+```
+autospawn = no
+daemon-binary = /bin/true
+```
+
+Finally run:
+
+```bash
+sudo -ugdm mkdir -p /var/lib/gdm/.config/systemd/user
+sudo -ugdm ln -s /dev/null /var/lib/gdm/.config/systemd/user/pulseaudio.socket
+```
+
+## MPV hardware decoding (NVIDIA VDPAU)
+
+Install `nvidia-utils` (or similar package depending on your nvidia driver) and `libva-vdpau-driver`.
+
+Create or edit `.config/mpv/mpv.conf`:
+
+```
+vo=vdpau
+profile=opengl-hq
+hwdec=vdpau
+hwdec-codecs=all
+scale=ewa_lanczossharp
+cscale=ewa_lanczossharp
+interpolation
+tscale=oversample
+```
 
