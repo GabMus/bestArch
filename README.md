@@ -13,6 +13,7 @@ Configurations and todos to make your Arch Linux the best Arch Linux
   - [Enable hibernation](#enable-hibernation)
 - [Package Management](#package-management)
   - [Switch to better mirrors](#switch-to-better-mirrors)
+  - [Enable colors in pacman](#enable-colors-in-pacman)
 - [Networking](#networking)
   - [DNSCrypt](#dnscrypt)
 - [Graphics](#graphics)
@@ -153,6 +154,10 @@ Use systemd-swap for automated and dynamic swapfile allocation and use. Consult 
 sudo pacman -S reflector
 sudo reflector --latest 200 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 ```
+
+## Enable colors in pacman
+
+Edit `/etc/pacman.conf` and uncomment the row saying `Color`
 
 # Networking
 
