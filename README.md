@@ -9,7 +9,7 @@ Configurations and todos to make your Arch Linux the best Arch Linux
   - [Compress initramfs with lz4](#compress-initramfs-with-lz4)
   - [Change IO Scheduler](#change-io-scheduler)
   - [Change CPU governor](#change-cpu-governor)
-  - [Create a swap file](#create-a-swap-file)\
+  - [Create a swap file](#create-a-swap-file)
   - [Enable hibernation](#enable-hibernation)
 - [Package Management](#package-management)
   - [Switch to better mirrors](#switch-to-better-mirrors)
@@ -83,9 +83,10 @@ Make sure `lz4` is installed.
 
 Edit `/etc/mkinitcpio.conf`:
 
-- Add `lz4 lz4_compress` to the `MODULES` array (delimited by `()`)
+- Add `lz4 lz4_compress` to the `MODULES` list (delimited by `()`)
 - Uncomment or add the line saying `COMPRESSION="lz4"`
 - Add a line saying `COMPRESSION_OPTIONS="-9"`
+- Add `shutdown` to the `HOOKS` list (delimited by `()`)
 
 Run `sudo mkinitcpio -p linux` to apply the mkinitcpio.conf changes.
 
@@ -209,7 +210,7 @@ Edit your NetworkManager configuration to point to the following IPs for respect
 
 Edit `/boot/loader/entries/arch.conf` appending `nvidia-drm.modeset=1` to the `options` row.
 
-Edit `/etc/mkinitcpio.conf` prepending to the `MODULES` array (delimited by `()`) the following: `nvidia nvidia_modeset nvidia_uvm nvidia_drm`.
+Edit `/etc/mkinitcpio.conf` prepending to the `MODULES` list (delimited by `()`) the following: `nvidia nvidia_modeset nvidia_uvm nvidia_drm`.
 
 Run `sudo mkinitcpio -p linux` to apply the mkinitcpio.conf changes.
 
