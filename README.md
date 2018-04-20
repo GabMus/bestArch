@@ -166,8 +166,8 @@ Edit `/etc/pacman.conf` and uncomment the row saying `Color`
 Edit `/etc/makepkg.conf`:
 
 - Add the following row (replace 7 with CPU threads-1): `MAKEFLAGS="-j7"`
-- Edit the row saying `COMPRESSXZ=(xz -c -z -)` to `COMPRESSXZ=(xz -c -z - <b>--threads=0</b>)`
-- `sudo pacman -S pigz` and edit the row saying `COMPRESSGZ=(gzip -c -f -n)` to `COMPRESSGZ=(<b>pigz</b> -c -f -n)`
+- Edit the row saying `COMPRESSXZ=(xz -c -z -)` to `COMPRESSXZ=(xz -c -z - --threads=0)`
+- `sudo pacman -S pigz` and edit the row saying `COMPRESSGZ=(gzip -c -f -n)` to `COMPRESSGZ=(pigz -c -f -n)`
 
 # Networking
 
