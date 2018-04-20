@@ -1,1 +1,1 @@
-discord trizen systemd-boot-pacman-hook
+discord trizen systemd-boot-pacman-hook nerd-fonts-gabmus
