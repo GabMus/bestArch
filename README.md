@@ -97,6 +97,30 @@ Run `sudo mkinitcpio -p linux` to apply the mkinitcpio.conf changes.
 
 [Arch Wiki reference](https://wiki.archlinux.org/index.php/CPU_frequency_scaling)
 
+```bash
+sudo pacman -S cpupower
+```
+
+To change the governor for the current session run `sudo cpupower frequency-set -g performance`.
+
+To change the governor on boot create a systemd service.
+
+Create `/etc/systemd/system/cpupower.service`:
+
+```
+[Unit]
+Description=Set CPU governor to performance
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/cpupower -c all frequency-set -g performance
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Finally run `sudo systemctl enable cpupower.service`.
+
 *NB: the default governor is powersave and you may want to leave it as it is.*
 
 Create `/etc/udev/rules.d/50-scaling-governor.rules` as follows:
