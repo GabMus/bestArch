@@ -14,6 +14,7 @@ Configurations and todos to make your Arch Linux the best Arch Linux
 - [Package Management](#package-management)
   - [Switch to better mirrors](#switch-to-better-mirrors)
   - [Enable colors in pacman](#enable-colors-in-pacman)
+  - [Enable parallel compilation and compression](#enable-parallel-compilation-and-compression)
 - [Networking](#networking)
   - [DNSCrypt](#dnscrypt)
 - [Graphics](#graphics)
@@ -159,6 +160,14 @@ sudo reflector --latest 200 --protocol http --protocol https --sort rate --save 
 ## Enable colors in pacman
 
 Edit `/etc/pacman.conf` and uncomment the row saying `Color`
+
+## Enable parallel compilation and compression
+
+Edit `/etc/makepkg.conf`:
+
+- Add the following row (replace 7 with CPU threads-1): `MAKEFLAGS="-j7"`
+- Edit the row saying `COMPRESSXZ=(xz -c -z -)` to `COMPRESSXZ=(xz -c -z - <b>--threads=0</b>)`
+- `sudo pacman -S pigz` and edit the row saying `COMPRESSGZ=(gzip -c -f -n)` to `COMPRESSGZ=(<b>pigz</b> -c -f -n)`
 
 # Networking
 
