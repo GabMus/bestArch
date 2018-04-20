@@ -1,1 +1,1 @@
-discord nerd-fonts-git pacaur trizen
+discord trizen systemd-boot-pacman-hook
