@@ -7,6 +7,7 @@ Configurations and todos to make your Arch Linux the best Arch Linux
   - [Use systemd-boot](#use-systemd-boot)
   - [Microcode updates](#microcode-updates)
   - [Compress initramfs with lz4](#compress-initramfs-with-lz4)
+  - [Limit journald log size](#limit-journald-log-size)
   - [Change IO Scheduler](#change-io-scheduler)
   - [Change CPU governor](#change-cpu-governor)
   - [Create a swap file](#create-a-swap-file)
@@ -90,6 +91,12 @@ Edit `/etc/mkinitcpio.conf`:
 - Add `shutdown` to the `HOOKS` list (delimited by `()`)
 
 Run `sudo mkinitcpio -p linux` to apply the mkinitcpio.conf changes.
+
+## Limit journald log size
+
+Edit `/etc/systemd/journald.conf`:
+
+- Uncomment `SystemMaxUse=` and append `200M` (or any size you like).
 
 ## Change IO Scheduler
 
