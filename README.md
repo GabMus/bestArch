@@ -206,33 +206,88 @@ Edit `/etc/makepkg.conf`:
 
 [Arch Wiki reference](https://wiki.archlinux.org/index.php/DNSCrypt)
 
-Encrypt your DNS traffic so your ISP can't spy on you.
+Encrypt your DNS traffic so your ISP can't spy on you. Use `pdnsd` as a proxy and cache for it.
 
 ### Install
 
 ```bash
-sudo pacman -S dnscrypt-proxy
+sudo pacman -S dnscrypt-proxy pdnsd
 ```
 
 ### Configure
 
-Edit `/etc/dnscrypt-proxy.conf` and change the `ResolverName` row as follows: `ResolverName dnscrypt.eu-nl`
+Edit `/etc/dnscrypt-proxy/dnscrypt-proxy.toml`:
+
+- Uncomment the `server_names` list (line 30) and change it as follows: `server_names = ['de.dnsmaschine.net', 'trashvpn']` (see *Note* below)
+- Change the `listen_address` list (line 36) to an empty list: `listen_address = []` (we're using systemd socket, this avoids port conflicts)
 
 *Note: you can find more "Resolvers" in `/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv` or [here](https://github.com/dyne/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv)*
 
-Make sure dnscrypt can run without root privileges: edit `/usr/lib/systemd/system/dnscrypt-proxy.service` to include:
+Edit `/usr/lib/systemd/system/dnscrypt-proxy.service` to include the following:
 
 ```
 [Service]
 DynamicUser=yes
 ```
 
-Reload systemd daemons, enable and start service:
+Edit `/usr/lib/systemd/system/dnscrypt-proxy.socket` to change the port dnscrypt runs on. Here is a snippet:
+
+```
+[Socket]
+ListenStream=127.0.0.1:53000
+ListenDatagram=127.0.0.1:53000
+```
+
+Create `/etc/pdnsd.conf` like so:
+
+```
+global {
+	perm_cache=1024;
+	cache_dir="/var/cache/pdnsd";
+#	pid_file = /var/run/pdnsd.pid;
+	run_as="pdnsd";
+	server_ip = 127.0.0.1;  # Use eth0 here if you want to allow other
+				# machines on your network to query pdnsd.
+	status_ctl = on;
+#	paranoid=on;       # This option reduces the chance of cache poisoning
+	                   # but may make pdnsd less efficient, unfortunately.
+	query_method=udp_tcp;
+	min_ttl=15m;       # Retain cached entries at least 15 minutes.
+	max_ttl=1w;        # One week.
+	timeout=10;        # Global timeout option (10 seconds).
+	neg_domain_pol=on;
+	udpbufsize=1024;   # Upper limit on the size of UDP messages.
+}
+
+server {
+    label = "dnscrypt-proxy";
+    ip = 127.0.0.1;
+    port = 53000;
+    timeout = 4;
+    proxy_only = on;
+}
+
+source {
+	owner=localhost;
+#	serve_aliases=on;
+	file="/etc/hosts";
+}
+
+rr {
+	name=localhost;
+	reverse=on;
+	a=127.0.0.1;
+	owner=localhost;
+	soa=localhost,root.localhost,42,86400,900,86400,86400;
+}
+```
+
+Reload systemd daemons, enable and start services:
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable dnscrypt-proxy.service
-sudo systemctl start dnscrypt-proxy.service
+sudo systemctl enable dnscrypt-proxy.service pdnsd.service
+sudo systemctl start dnscrypt-proxy.service pdnsd.service
 ```
 
 Edit your NetworkManager configuration to point to the following IPs for respectively IPv4 and IPv6 DNSes:
