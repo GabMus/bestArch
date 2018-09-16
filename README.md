@@ -12,6 +12,7 @@ Configurations and todos to make your Arch Linux the best Arch Linux
   - [Change CPU governor](#change-cpu-governor)
   - [Create a swap file](#create-a-swap-file)
   - [Enable hibernation](#enable-hibernation)
+  - [Hide folders](#hide-folders)
 - [Package Management](#package-management)
   - [Switch to better mirrors](#switch-to-better-mirrors)
   - [Enable colors in pacman](#enable-colors-in-pacman)
@@ -176,6 +177,12 @@ Use systemd-swap for automated and dynamic swapfile allocation and use. Consult 
 ## Enable Hibernation
 
 [Arch Wiki reference](https://wiki.archlinux.org/index.php/Power_management/Suspend_and_hibernate#Hibernation_into_swap_file)
+
+## Hide folders
+
+[Arch Wiki reference](https://wiki.archlinux.org/index.php/GNOME/Files#Hiding_files)
+
+Create a .hidden file consisting names of unnecessary files and folders followed by a line break
 
 # Package Management
 
