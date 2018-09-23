@@ -23,6 +23,7 @@ Configurations and todos to make your Arch Linux the best Arch Linux
 - [Multimedia](#multimedia)
   - [Fix bluetooth audio](#fix-bluetooth-audio)
   - [MPV hardware decoding (NVIDIA VDPAU)](#mpv-hardware-decoding-nvidia-vdpau)
+  - [Enable hifi](#enable-hifi)
 
 # System
 
@@ -366,3 +367,36 @@ interpolation
 tscale=oversample
 ```
 
+## Enable hifi
+
+[Arch Wiki reference](https://wiki.archlinux.org/index.php/PulseAudio#daemon.conf)
+
+Edit /etc/pulse/daemon.conf (use higher values if supported; src-sinc-medium-quality can be changed to src-sinc-best-quality)
+
+```
+default-sample-format = s24le
+default-sample-rate = 96000
+avoid-resampling = true
+resample-method = src-sinc-medium-quality
+```
+
+Restart pulseaudio:
+
+```bash
+pulseaudio -k
+pulseaudio --start
+```
+
+Sometimes disabling powersaving may help too. If you use intel's driver (to check run lspci -k), create or edit /etc/modprobe.d/sound.conf
+
+```
+options snd-hda-intel power_save=0
+```
+
+Then run and reboot:
+
+```bash
+sudo mkinitcpio -P
+```
+
+*NB: Enabled high sample rate may cause distortions and higher cpu usage. Pulseaudio 11 or newer required.
