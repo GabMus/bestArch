@@ -371,13 +371,13 @@ tscale=oversample
 
 [Arch Wiki reference](https://wiki.archlinux.org/index.php/PulseAudio#daemon.conf)
 
-Edit /etc/pulse/daemon.conf (use higher values if supported; src-sinc-medium-quality can be changed to src-sinc-best-quality)
+Edit /etc/pulse/daemon.conf (for different resample methods run pulseaudio --dump-resample-methods)
 
 ```
-default-sample-format = s24le
+default-sample-format = s32le
 default-sample-rate = 96000
 avoid-resampling = true
-resample-method = src-sinc-medium-quality
+resample-method = soxr-vhq
 ```
 
 Restart pulseaudio:
