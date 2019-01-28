@@ -1,3 +1,5 @@
+# NOTICE: repo moved to <https://gitlab.com/gabmus/bestarch>
+
 # bestArch
 
 Configurations and todos to make your Arch Linux the best Arch Linux
